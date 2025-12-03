@@ -38,6 +38,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     command: celery -A streamsmart worker -l info
+    env_file:
+      - .env
     volumes:
       - ./backend:/app
     environment:

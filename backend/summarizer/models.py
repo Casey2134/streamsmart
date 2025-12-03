@@ -1,20 +1,4 @@
 from django.db import models
-from django.contrib.postgres.fields import ArrayField
-
-
-# Create your models here.
-class Chapter(models.Model):
-    name = models.TextField()
-    start = models.IntegerField()
-    end = models.IntegerField()
-
-
-class Highlight(models.Model):
-    name = models.TextField()
-    start = models.IntegerField()
-    end = models.IntegerField()
-    description = models.TextField()
-
 
 class Job(models.Model):
     class Status(models.TextChoices):
@@ -32,3 +16,5 @@ class Job(models.Model):
     transcript = models.TextField(blank=True, null=True)
     audio_path = models.TextField(blank=True, null=True)
     summary = models.TextField(blank=True, null=True)
+    chapters = models.JSONField(blank=True, null=True)
+    highlights = models.JSONField(blank=True, null=True)

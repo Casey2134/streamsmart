@@ -74,6 +74,16 @@ function App() {
     };
   }, []);
 
+  const formatTimestamp = (seconds) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    if (hrs > 0) {
+      return `${hrs}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+    return `${mins}:${String(secs).padStart(2, '0')}`;
+  };
+
   const getStatusMessage = (status) => {
     switch (status) {
       case 'DOWNLOADING':
@@ -121,6 +131,35 @@ function App() {
             <div className="summary">
               <h3>Summary</h3>
               <p>{job.summary}</p>
+            </div>
+          )}
+
+          {job.status === 'COMPLETED' && job.chapters && job.chapters.length > 0 && (
+            <div className="chapters">
+              <h3>Chapters</h3>
+              <ul>
+                {job.chapters.map((chapter, index) => (
+                  <li key={index}>
+                    <span className="timestamp">{formatTimestamp(chapter.timestamp)}</span>{' '}
+                    <strong>{chapter.title}</strong>
+                    {chapter.summary && <p>{chapter.summary}</p>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {job.status === 'COMPLETED' && job.highlights && job.highlights.length > 0 && (
+            <div className="highlights">
+              <h3>Highlights</h3>
+              <ul>
+                {job.highlights.map((highlight, index) => (
+                  <li key={index}>
+                    <span className="timestamp">{formatTimestamp(highlight.timestamp)}</span>{' '}
+                    <span>{highlight.description}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
         </div>

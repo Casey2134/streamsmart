@@ -3,6 +3,7 @@ from .models import Job
 import yt_dlp
 import os
 from openai import OpenAI
+import requests
 import math
 import subprocess
 import json
@@ -28,6 +29,8 @@ def process_video(job_id: int):
     data = json.loads(raw_content)
     job.transcript = transcript
     job.summary = data.get('summary')
+    job.chapters = data.get("chapters")
+    job.highlights = data.get("highlights")
     job.status = "COMPLETED"
     job.save()
 
@@ -76,116 +79,52 @@ def download_audio(url: str):
         raise e
 
 @shared_task
-def transcribe_audio(path: tuple):
-    file_paths = split_audio_if_needed(path, 25)
-    results = []
-    for index, (chunk_path, offset) in enumerate(file_paths):
-        response = process_chunk(chunk_path)
-        results.append(response.text)
+def transcribe_audio(path: str):
+    transcription = process_chunk(path)
 
     if os.path.exists(path):
         os.remove(path)
     
-    transcription = " ".join(results)
     return transcription
 
 @shared_task
 def process_chunk(path: str):
-    client = OpenAI()
-    audio_file = open(path, "rb")
-    transcription = client.audio.transcriptions.create(
-        model="gpt-4o-transcribe", 
-        file=audio_file,
-    )
+
+    whisper_url = os.environ.get("WHISPER_API_URL")
+
+    # Local Whisper container (onerahmet/openai-whisper-asr-webservice)
+    # Endpoint is /asr, file goes in multipart form data
+    with open(path, "rb") as audio_file:
+        response = requests.post(
+            f"{whisper_url}/asr",
+            files={"audio_file": audio_file},
+            params={"output": "json", "task": "transcribe"},
+        )
+        response.raise_for_status()
+        transcription = response.json()
+
     if os.path.exists(path):
         os.remove(path)
     return transcription
 
 @shared_task
-def get_audio_duration(file_path):
-    """Get duration in seconds using ffprobe."""
-    cmd = [
-        'ffprobe', 
-        '-v', 'error', 
-        '-show_entries', 'format=duration', 
-        '-of', 'json', 
-        file_path
-    ]
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    data = json.loads(result.stdout)
-    return float(data['format']['duration'])
-
-@shared_task
-def split_audio_if_needed(file_path: str, max_size_mb: int = 25):
-    """
-    Splits audio using raw FFmpeg (works on Python 3.13 without pydub).
-    Returns a list of tuples: [(path, start_offset_seconds), ...]
-    """
-    file_size = os.path.getsize(file_path)
-    limit_bytes = max_size_mb * 1024 * 1024
-    
-    # If small enough, return original with 0 offset
-    if file_size <= limit_bytes:
-        return [(file_path, 0.0)]
-
-    print(f"File size {file_size} exceeds limit {limit_bytes}. Splitting...")
-
-    # 1. Get total duration in seconds
-    try:
-        total_duration = get_audio_duration(file_path)
-    except Exception as e:
-        print(f"Error getting duration: {e}")
-        raise e
-
-    # 2. Calculate chunk length
-    # Target 24MB to be safe
-    safe_limit_bytes = (max_size_mb - 1) * 1024 * 1024
-    chunk_length_seconds = math.floor((safe_limit_bytes / file_size) * total_duration)
-
-    chunks_data = []
-    base_name, ext = os.path.splitext(file_path)
-    
-    current_time = 0.0
-    part_num = 1
-
-    while current_time < total_duration:
-        chunk_filename = f"{base_name}_part{part_num}{ext}"
-        
-        # FFmpeg command to slice: 
-        # -ss = start time
-        # -t = duration
-        # -c copy = fast copy without re-encoding quality loss
-        cmd = [
-            'ffmpeg',
-            '-y', # Overwrite if exists
-            '-i', file_path,
-            '-ss', str(current_time),
-            '-t', str(chunk_length_seconds),
-            '-c', 'copy', # FAST: Copies stream, no re-encoding
-            chunk_filename
-        ]
-        
-        subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        
-        chunks_data.append((chunk_filename, current_time))
-        
-        current_time += chunk_length_seconds
-        part_num += 1
-
-    # Optional: Delete original
-    # os.remove(file_path)
-
-    return chunks_data
-
-@shared_task
-def llm_analysis(transcript: str):
+def llm_analysis(transcript: json):
     ANALYSIS_PROMPT = f"""
     Analyze this video transcript and provide:
-    1. A 2-3 paragraph summary of the main content
 
-    Respond in valid JSON format:
+    1. A 2-3 paragraph summary of the main content
+    2. Chapter breakdown with timestamps (use the [HH:MM:SS] markers in transcript)
+    3. 3-5 highlight moments worth watching (use the [HH:MM:SS] markers in transcript)
+
+    Respond in JSON format:
     {{
-    "summary": "..."
+    "summary": "...",
+    "chapters": [
+        {{"timestamp": <seconds>, "title": "...", "summary": "..."}}
+    ],
+    "highlights": [
+        {{"timestamp": <seconds>, "description": "..."}}
+    ]
     }}
 
     TRANSCRIPT:

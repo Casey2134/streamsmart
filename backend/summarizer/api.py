@@ -16,7 +16,8 @@ class JobCreate(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         url = request.data.get('url')
         if url:
-            existing_job = Job.objects.filter(url=url).last()
+            # Only return existing job if it completed successfully
+            existing_job = Job.objects.filter(url=url, status="COMPLETED").last()
             if existing_job:
                 serializer = self.get_serializer(existing_job)
                 return Response(serializer.data, status=status.HTTP_200_OK)

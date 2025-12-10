@@ -3,11 +3,14 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies and Tailscale
 RUN apt-get update && apt-get install -y \
     build-essential \
     libpq-dev \
     curl \
+    ca-certificates \
+    iptables \
+    && curl -fsSL https://tailscale.com/install.sh | sh \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js for frontend build
@@ -43,5 +46,8 @@ RUN python manage.py collectstatic --noinput 2>/dev/null || true
 
 EXPOSE 8000
 
-# Run migrations and start server
-CMD python manage.py migrate && daphne -b 0.0.0.0 -p ${PORT:-8000} streamsmart.asgi:application
+# Copy startup script
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
+CMD ["/app/start.sh"]

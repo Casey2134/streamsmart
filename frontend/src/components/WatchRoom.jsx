@@ -143,8 +143,8 @@ function WatchRoom({ roomCode, sessionId, username }) {
       const diff = syncState.currentTime - currentTime;
       const absDiff = Math.abs(diff);
 
-      // Hard seek if difference > 0.5 seconds
-      if (absDiff > 0.5) {
+      // Hard seek if difference > 2 seconds (avoids constant buffering)
+      if (absDiff > 2.0) {
         isLocalActionRef.current = true;
         player.seekTo(syncState.currentTime, true);
         player.setPlaybackRate(1.0);
@@ -152,15 +152,15 @@ function WatchRoom({ roomCode, sessionId, username }) {
           isLocalActionRef.current = false;
         }, 300);
       }
-      // Aggressive correction: adjust playback rate for drift (0.15-0.5 second)
-      else if (absDiff > 0.1 && syncState.isPlaying) {
-        // More aggressive rate adjustment based on drift amount
-        const intensity = Math.min(absDiff * 0.2, 0.1); // Max 10% speed change
+      // Gradual correction: adjust playback rate for drift (0.3-2 seconds)
+      else if (absDiff > 0.3 && syncState.isPlaying) {
+        // Adjust rate based on drift amount
+        const intensity = Math.min(absDiff * 0.15, 0.1); // Max 10% speed change
         const rate = diff > 0 ? 1 + intensity : 1 - intensity;
         player.setPlaybackRate(rate);
       }
       // Reset to normal speed when tightly synced
-      else if (absDiff <= 0.1) {
+      else if (absDiff <= 0.3) {
         player.setPlaybackRate(1.0);
       }
 
@@ -200,7 +200,7 @@ function WatchRoom({ roomCode, sessionId, username }) {
           console.error('Periodic sync error:', e);
         }
       }
-    }, 500);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, [isHost, playerReady, syncState.isPlaying, sendSync]);

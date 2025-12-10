@@ -77,7 +77,6 @@ export function useWatchParty(roomCode, sessionId, username) {
 
     ws.current.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      console.log('WebSocket message received:', data);
 
       switch (data.type) {
         case 'pong':
@@ -95,13 +94,10 @@ export function useWatchParty(roomCode, sessionId, username) {
             // Calculate average latency
             const avgLatency = latencySamplesRef.current.reduce((a, b) => a + b, 0) / latencySamplesRef.current.length;
             latencyRef.current = avgLatency / 1000; // Convert to seconds
-
-            console.log(`Latency: ${Math.round(avgLatency)}ms (avg of ${latencySamplesRef.current.length} samples)`);
           }
           break;
 
         case 'role':
-          console.log('Setting role - isHost:', data.is_host, 'videoUrl:', data.video_url);
           setIsHost(data.is_host);
           setVideoUrl(data.video_url);
           break;
@@ -154,11 +150,10 @@ export function useWatchParty(roomCode, sessionId, username) {
           break;
 
         case 'error':
-          console.warn('Server error:', data.message);
           break;
 
         default:
-          console.log('Unknown message type:', data.type);
+          break;
       }
     };
 

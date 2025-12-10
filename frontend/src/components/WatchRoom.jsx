@@ -66,7 +66,6 @@ function WatchRoom({ roomCode, sessionId, username }) {
         },
         events: {
           onReady: () => {
-            console.log('YouTube player ready');
             setPlayerReady(true);
           },
           onStateChange: (event) => {

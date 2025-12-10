@@ -4,9 +4,10 @@ import yt_dlp
 import os
 from openai import OpenAI
 import requests
-import math
-import subprocess
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 @shared_task
 def process_video(job_id: int):
@@ -74,8 +75,7 @@ def download_audio(url: str):
             return os.path.abspath(final_path)
 
     except Exception as e:
-        print(f"Error downloading audio: {e}")
-        # Re-raise the exception so Celery marks the task as FAILED
+        logger.error(f"Error downloading audio: {e}")
         raise e
 
 @shared_task

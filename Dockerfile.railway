@@ -1,0 +1,47 @@
+# Dockerfile for Railway deployment
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js for frontend build
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
+
+# Copy and install backend dependencies
+COPY backend/requirements.txt ./backend/
+RUN pip install --no-cache-dir -r backend/requirements.txt
+RUN pip install --no-cache-dir whitenoise dj-database-url psycopg2-binary
+
+# Copy frontend and build
+COPY frontend/package*.json ./frontend/
+WORKDIR /app/frontend
+RUN npm ci
+
+COPY frontend/ ./
+RUN npm run build
+
+# Copy backend
+WORKDIR /app
+COPY backend/ ./backend/
+
+# Create static directory and copy frontend build
+RUN mkdir -p /app/backend/staticfiles
+RUN cp -r /app/frontend/dist/* /app/backend/staticfiles/
+
+WORKDIR /app/backend
+
+# Collect static files
+ENV DJANGO_SETTINGS_MODULE=streamsmart.settings
+RUN python manage.py collectstatic --noinput 2>/dev/null || true
+
+EXPOSE 8000
+
+# Run migrations and start server
+CMD python manage.py migrate && daphne -b 0.0.0.0 -p ${PORT:-8000} streamsmart.asgi:application

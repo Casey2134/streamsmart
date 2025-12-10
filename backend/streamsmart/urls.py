@@ -18,5 +18,6 @@ from django.contrib import admin
 from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/summarizer/', include('summarizer.api_urls'))
+    path('api/v1/summarizer/', include('summarizer.api_urls')),
+    path('api/v1/watchparty/', include('watchparty.api_urls')),
 ]

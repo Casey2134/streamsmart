@@ -9,8 +9,21 @@ https://docs.djangoproject.com/en/5.2/howto/deployment/asgi/
 
 import os
 
+from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.auth import AuthMiddlewareStack
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'streamsmart.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "streamsmart.settings")
 
-application = get_asgi_application()
+# Initialize Django ASGI application early to ensure apps are loaded
+django_asgi_app = get_asgi_application()
+
+# Import WebSocket routing after Django is initialized
+from watchparty import routing
+
+application = ProtocolTypeRouter(
+    {
+        "http": django_asgi_app,
+        "websocket": AuthMiddlewareStack(URLRouter(routing.websocket_urlpatterns)),
+    }
+)

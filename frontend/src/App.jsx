@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import WatchPartyPage from './components/WatchPartyPage'
 import './App.css'
 
-function App() {
+function Summarizer() {
   const [url, setUrl] = useState("");
   const [job, setJob] = useState(null);
   const [error, setError] = useState(null);
@@ -165,6 +167,24 @@ function App() {
         </div>
       )}
     </>
+  )
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <nav className="main-nav">
+        <Link to="/">Summarizer</Link>
+        <Link to="/watch">Watch Party</Link>
+      </nav>
+      <main className="main-content">
+        <Routes>
+          <Route path="/" element={<Summarizer />} />
+          <Route path="/watch" element={<WatchPartyPage />} />
+          <Route path="/watch/:roomCode" element={<WatchPartyPage />} />
+        </Routes>
+      </main>
+    </BrowserRouter>
   )
 }
 

@@ -5,6 +5,396 @@
   text-align: center;
 }
 
+/* Navigation */
+.main-nav {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #333;
+}
+
+.main-nav a {
+  text-decoration: none;
+  color: #888;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.main-nav a:hover {
+  color: #fff;
+}
+
+.main-content {
+  text-align: left;
+}
+
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #1a1a1a;
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 90%;
+}
+
+.modal h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+.modal .form-group {
+  margin-bottom: 1rem;
+}
+
+.modal label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #888;
+}
+
+.modal input[type="text"] {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #333;
+  border-radius: 4px;
+  background: #242424;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.modal button {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+/* Create Room Page */
+.create-room-page {
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.create-room-page h1 {
+  margin-bottom: 0.5rem;
+}
+
+.create-room-page p {
+  color: #888;
+  margin-bottom: 2rem;
+}
+
+.create-room-form {
+  text-align: left;
+}
+
+.create-room-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.create-room-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #888;
+}
+
+.create-room-form input[type="url"] {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #333;
+  border-radius: 4px;
+  background: #242424;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.info-text {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 2rem;
+}
+
+.error-message {
+  color: #ff6b6b;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: rgba(255, 107, 107, 0.1);
+  border-radius: 4px;
+}
+
+/* Watch Room - Full width layout */
+.watch-room {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  padding: 0 1.5rem;
+  box-sizing: border-box;
+}
+
+.watch-room-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+  max-width: 1800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.watch-room-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.watch-room-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.connection-status {
+  font-size: 0.85rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+}
+
+.connection-status.connected {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+}
+
+.connection-status.disconnected {
+  background: rgba(255, 152, 0, 0.2);
+  color: #ff9800;
+}
+
+.share-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.viewer-notice {
+  background: rgba(33, 150, 243, 0.1);
+  color: #2196f3;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  text-align: center;
+  max-width: 1800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.watch-room-content {
+  display: flex;
+  gap: 1rem;
+  max-width: 1800px;
+  margin: 0 auto;
+  height: calc(100vh - 180px);
+  min-height: 500px;
+}
+
+/* Video Player */
+.video-container {
+  flex: 1;
+  min-width: 0;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%;
+}
+
+.video-wrapper > div,
+.video-wrapper > iframe,
+#youtube-player {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.video-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+}
+
+.video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  cursor: not-allowed;
+}
+
+/* Chat Sidebar */
+.chat-container {
+  width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-box {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #1a1a1a;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.chat-header {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #333;
+  flex-shrink: 0;
+}
+
+.chat-header h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.chat-empty {
+  color: #666;
+  text-align: center;
+  margin: auto;
+}
+
+.chat-message {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+
+.chat-message.system-message {
+  justify-content: center;
+}
+
+.system-text {
+  color: #666;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.chat-username {
+  font-weight: 600;
+  color: #646cff;
+}
+
+.chat-text {
+  color: #fff;
+  word-break: break-word;
+}
+
+.chat-time {
+  color: #666;
+  font-size: 0.75rem;
+  margin-left: auto;
+}
+
+.chat-input-form {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-top: 1px solid #333;
+  flex-shrink: 0;
+}
+
+.chat-input-form input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #333;
+  border-radius: 4px;
+  background: #242424;
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.chat-input-form button {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+/* Room Error Pages */
+.watch-room-error,
+.room-error-page,
+.loading-page {
+  text-align: center;
+  padding: 3rem;
+}
+
+.watch-room-error h2,
+.room-error-page h1 {
+  margin-bottom: 1rem;
+}
+
+.watch-room-error p,
+.room-error-page p {
+  color: #888;
+  margin-bottom: 2rem;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .watch-room-content {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .video-container {
+    width: 100%;
+  }
+
+  .chat-container {
+    width: 100%;
+    height: 350px;
+  }
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;

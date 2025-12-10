@@ -1,15 +1,18 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react' // or vue
+import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      // Catch any request starting with /api
       '/api': {
-        target: 'http://backend:8000', // CHANGE THIS to your backend port
+        target: 'http://backend:8000',
         changeOrigin: true,
         secure: false,
+      },
+      '/ws': {
+        target: 'ws://backend:8000',
+        ws: true,
       },
     },
   },

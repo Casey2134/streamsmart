@@ -18,6 +18,12 @@ fi
 echo "Running database migrations..."
 python manage.py migrate
 
+# Start Celery worker in background (if CELERY_BROKER_URL is set)
+if [ -n "$CELERY_BROKER_URL" ]; then
+    echo "Starting Celery worker..."
+    celery -A streamsmart worker -l info &
+fi
+
 # Start the server
 echo "Starting Daphne server..."
 exec daphne -b 0.0.0.0 -p ${PORT:-8000} streamsmart.asgi:application

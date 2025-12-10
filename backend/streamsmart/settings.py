@@ -19,10 +19,17 @@ SECRET_KEY = os.environ.get(
 
 # Hosts
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,backend,127.0.0.1").split(",")
-# Always allow Railway healthcheck
-ALLOWED_HOSTS += ["healthcheck.railway.app", ".railway.app"]
+# Always allow Railway and custom domains
+ALLOWED_HOSTS += [
+    "healthcheck.railway.app",
+    ".railway.app",
+    "streamsmart.ai",
+    "www.streamsmart.ai",
+]
 CSRF_TRUSTED_ORIGINS = [
-    f"https://{host}" for host in ALLOWED_HOSTS if host not in ("localhost", "backend", "127.0.0.1", "healthcheck.railway.app", ".railway.app")
+    "https://streamsmart.ai",
+    "https://www.streamsmart.ai",
+    "https://*.railway.app",
 ]
 
 # Application definition

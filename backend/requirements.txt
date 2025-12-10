@@ -12,7 +12,7 @@ anthropic>=0.18
 python-dotenv>=1.0
 gunicorn>=21.0
 uvicorn>=0.27
-requests
+requests[socks]
 daphne
 whitenoise>=6.6
 dj-database-url>=2.1

@@ -96,6 +96,10 @@ def process_chunk(path: str):
     if whisper_url and not whisper_url.startswith(("http://", "https://")):
         whisper_url = f"http://{whisper_url}"
 
+    # Use Tailscale SOCKS proxy if available (for reaching local network)
+    tailscale_proxy = os.environ.get("TAILSCALE_PROXY")
+    proxies = {"http": tailscale_proxy, "https": tailscale_proxy} if tailscale_proxy else None
+
     # Local Whisper container (onerahmet/openai-whisper-asr-webservice)
     # Endpoint is /asr, file goes in multipart form data
     with open(path, "rb") as audio_file:
@@ -103,6 +107,7 @@ def process_chunk(path: str):
             f"{whisper_url}/asr",
             files={"audio_file": audio_file},
             params={"output": "json", "task": "transcribe"},
+            proxies=proxies,
         )
         response.raise_for_status()
         transcription = response.json()

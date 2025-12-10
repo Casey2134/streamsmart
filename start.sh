@@ -18,10 +18,10 @@ if [ -n "$TAILSCALE_AUTHKEY" ]; then
     tailscale status
 
     # Set proxy environment variables for Python requests
-    export ALL_PROXY=socks5://localhost:1055
-    export HTTPS_PROXY=socks5://localhost:1055
-    export HTTP_PROXY=socks5://localhost:1055
-    echo "SOCKS5 proxy configured on localhost:1055"
+    # Note: We don't set global proxy vars to avoid breaking yt-dlp/YouTube
+    # Instead, we'll configure the proxy only for Tailscale IPs in code
+    export TAILSCALE_PROXY=socks5://localhost:1055
+    echo "SOCKS5 proxy available at localhost:1055 (use TAILSCALE_PROXY env var)"
 else
     echo "Warning: TAILSCALE_AUTHKEY not set, skipping Tailscale connection"
 fi

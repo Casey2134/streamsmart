@@ -90,7 +90,11 @@ def transcribe_audio(path: str):
 @shared_task
 def process_chunk(path: str):
 
-    whisper_url = os.environ.get("WHISPER_API_URL")
+    whisper_url = os.environ.get("WHISPER_API_URL", "")
+
+    # Add http:// if no scheme provided
+    if whisper_url and not whisper_url.startswith(("http://", "https://")):
+        whisper_url = f"http://{whisper_url}"
 
     # Local Whisper container (onerahmet/openai-whisper-asr-webservice)
     # Endpoint is /asr, file goes in multipart form data
